@@ -1,0 +1,26 @@
+kind: PipelineRun
+apiVersion: tekton.dev/v1beta1
+metadata:
+  name: konflux-integration-tests
+spec:
+  pipelineSpec:
+    params:
+      - description: 'Snapshot of the application'
+        name: SNAPSHOT
+        type: string
+    tasks:
+      - name: test-metadata-1
+        taskRef:
+          resolver: git
+          params:
+            - name: url
+              value: https://github.com/konflux-ci/tekton-integration-catalog.git
+            - name: revision
+              value: main
+            - name: pathInRepo
+              value: tasks/test-metadata/0.3/test-metadata.yaml
+        params:
+          - name: SNAPSHOT
+            value: $(params.SNAPSHOT)
+          - name: test-name
+            value: $(context.pipelineRun.name)
